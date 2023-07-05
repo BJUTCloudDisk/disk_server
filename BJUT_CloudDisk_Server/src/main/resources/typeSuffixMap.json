@@ -1,0 +1,18 @@
+[
+  {
+    "type": "视频",
+    "suffix": ["mp4", "mov", "wmv", "flv", "avi", "avchd", "webm", "mkv"]
+  },
+  {
+    "type": "图片",
+    "suffix": ["png", "jpg", "gif", "tiff", "bmp", "svg", "webp"]
+  },
+  {
+    "type": "文档",
+    "suffix": ["pdf", "docx", "txt", "md", "pptx"]
+  },
+  {
+    "type": "音乐",
+    "suffix": ["mp3", "aac", "wav", "ogg", "flac"]
+  }
+]
