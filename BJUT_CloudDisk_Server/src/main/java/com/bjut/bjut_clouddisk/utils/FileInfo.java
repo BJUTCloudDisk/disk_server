@@ -48,13 +48,11 @@ public class FileInfo {
         int index = fileName.lastIndexOf(".");
         if (index > 0) {
             String extension = fileName.substring(index + 1);
-            System.out.println(extension); //输出 md
             return extension;
         } else {
             System.out.println("文件没有扩展名");
             return null;
         }
-
     }
 
     public static List<HashMap<String, Object>> getDirectoryInfo(String dirPath, String goalFileType) throws IOException {
@@ -101,8 +99,15 @@ public class FileInfo {
 
                 // 把图片路径添加到对应的List中
                 List<String> picList = (List<String>) map.get("picList");
-                picList.add(file.getPath().replace(BjutCloudDiskApplication.class.getResource("/disk/").getFile(), "http://10.18.18.88:8081/disk/"));
-            }
+
+                String osName = System.getProperty("os.name"); //获取操作系统的名称
+                if (osName.contains("Mac")) {
+                    picList.add(file.getPath().replace(BjutCloudDiskApplication.class.getResource("/disk/").getFile(), "http://localhost:8081/disk/"));
+                }
+                else {
+                    picList.add(file.getPath().replace("\\","/").replace(BjutCloudDiskApplication.class.getResource("/disk/").getFile().replaceFirst("/",""), "http://localhost:8081/disk/"));
+                }
+                }
         }
     }
 
