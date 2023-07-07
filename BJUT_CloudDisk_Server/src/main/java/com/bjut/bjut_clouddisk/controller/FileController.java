@@ -1,11 +1,13 @@
 package com.bjut.bjut_clouddisk.controller;
 
+import cn.hutool.core.util.ZipUtil;
 import com.bjut.bjut_clouddisk.utils.EncryptionDES;
 import com.bjut.bjut_clouddisk.BjutCloudDiskApplication;
 import com.bjut.bjut_clouddisk.common.MyResponse;
 import com.bjut.bjut_clouddisk.config.DiskConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,12 @@ import static com.bjut.bjut_clouddisk.utils.FileInfo.getDirectoryInfo;
 public class FileController {
     @Autowired
     DiskConfig diskConfig;
+
+    @Value("${disk.IP}")
+    public String IP;
+
+    @Value("${disk.port}")
+    public String port;
 
     @RequestMapping("/download")
     public MyResponse<String> fileDownLoad(HttpServletResponse response, @RequestParam("filePath") String filePath) {
@@ -56,6 +64,13 @@ public class FileController {
         return MyResponse.success("下载成功");
     }
 
+    /***
+     * 上传文件到服务器
+     * @param file
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/upload")
     public MyResponse<String> uploadFile(@RequestParam MultipartFile file, @RequestParam("filePath") String filePath) throws IOException {
         // 获取服务器的保存文件的路径
@@ -104,6 +119,12 @@ public class FileController {
 //        return MyResponse.success("已向对方发送分享文件请求");
 //    }
 
+    /***
+     * 生成分享链接
+     * @param filePath
+     * @return
+     * @throws Exception
+     */
     @GetMapping("/share")
     public MyResponse<String> share(@RequestParam("filePath") String filePath) throws Exception {
         String diskPath = BjutCloudDiskApplication.class.getResource("/disk/").getFile();
@@ -121,6 +142,13 @@ public class FileController {
 
     }
 
+    /***
+     * 通过分享链接下载文件
+     * @param response
+     * @param shareLink
+     * @return
+     * @throws Exception
+     */
     @GetMapping("/getShare")
     public MyResponse<String> getShare(HttpServletResponse response, @RequestParam("shareLink") String shareLink) throws Exception {
         String diskPath = BjutCloudDiskApplication.class.getResource("/disk/").getFile();
@@ -149,6 +177,13 @@ public class FileController {
         return MyResponse.success("获取分享文件成功");
     }
 
+    /***
+     * 多线程分块下载文件
+     * @param request
+     * @param response
+     * @param filePath
+     * @throws Exception
+     */
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
     @RequestMapping("/spiltDownLoad")
     @Async // 使用@Async注解来标记这个方法是异步执行的
@@ -236,6 +271,13 @@ public class FileController {
         }
     }
 
+    /***
+     * 获取文件夹下所有指定类型的文件信息
+     * @param filePath
+     * @param fileType
+     * @return
+     * @throws Exception
+     */
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
     @GetMapping("/getInfo")
     public MyResponse<List<HashMap<String, Object>>> getInfo(@RequestParam("filePath") String filePath,
@@ -244,5 +286,34 @@ public class FileController {
         return MyResponse.success(picData);
     }
 
+    /***
+     * 压缩文件
+     * @param filePath
+     * @return
+     */
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
+    @RequestMapping("package")
+    @ResponseBody
+    public MyResponse<String> packagePath(@RequestParam("filePath") String filePath) {
+        ZipUtil.zip(filePath);
+
+        return MyResponse.success("压缩成功");
+    }
+
+    /***
+     * 解压文件
+     * @param filePath
+     * @return
+     */
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
+    @RequestMapping("unPackage")
+    @ResponseBody
+    public MyResponse<String> unPackage(@RequestParam("filePath") String filePath) {
+        if (filePath.contains(".zip")) {
+            ZipUtil.unzip(filePath);
+        }
+
+        return MyResponse.success("解压成功");
+    }
 }
 
