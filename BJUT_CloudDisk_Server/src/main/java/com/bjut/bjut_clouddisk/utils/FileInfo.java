@@ -5,6 +5,7 @@ import com.bjut.bjut_clouddisk.BjutCloudDiskApplication;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
@@ -32,13 +33,31 @@ public class FileInfo {
         return formatted;
     }
 
-    public static String getFileType(String filePath) {
-        return Optional.ofNullable(filePath)
-                .filter(f -> f.contains("."))
-                .map(f -> f.substring(filePath.lastIndexOf(".") + 1)).get();
+    public static String getFileType(String filePath) throws IOException {
+//        Path path = new File(filePath).toPath();
+//        String mimeType = Files.probeContentType(path);
+//        System.out.println(mimeType);
+//        return mimeType;
+
+//        return Optional.ofNullable(filePath)
+//                .filter(f -> f.contains("."))
+//                .map(f -> f.substring(filePath.lastIndexOf(".") + 1)).get();
+
+        File file = new File(filePath);
+        String fileName = file.getName();
+        int index = fileName.lastIndexOf(".");
+        if (index > 0) {
+            String extension = fileName.substring(index + 1);
+            System.out.println(extension); //输出 md
+            return extension;
+        } else {
+            System.out.println("文件没有扩展名");
+            return null;
+        }
+
     }
 
-    public static List<HashMap<String, Object>> getDirectoryInfo(String dirPath, String goalFileType) {
+    public static List<HashMap<String, Object>> getDirectoryInfo(String dirPath, String goalFileType) throws IOException {
         String diskPath = BjutCloudDiskApplication.class.getResource("/disk/").getFile();
         dirPath = diskPath + dirPath;
 
@@ -50,7 +69,7 @@ public class FileInfo {
         return picData;
     }
 
-    public static void processFile(String dirPath, File file, String goalFileType, List<HashMap<String, Object>> picData) {
+    public static void processFile(String dirPath, File file, String goalFileType, List<HashMap<String, Object>> picData) throws IOException {
         if (file.isDirectory()) {  //如果是目录，就遍历它的子文件
             File[] fs = file.listFiles();  //遍历path下的文件和目录，放在File数组中
             assert fs != null;
@@ -82,20 +101,20 @@ public class FileInfo {
 
                 // 把图片路径添加到对应的List中
                 List<String> picList = (List<String>) map.get("picList");
-                picList.add(file.getPath().replace(BjutCloudDiskApplication.class.getResource("/disk/").getFile(), "http://localhost:8081/disk/"));
+                picList.add(file.getPath().replace(BjutCloudDiskApplication.class.getResource("/disk/").getFile(), "http://10.18.18.88:8081/disk/"));
             }
         }
     }
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //        String test = getSingleCreatDate("/Users/wangzian/Movies/IMG_5442.mp4");
 //        System.out.println("文件创建日期和时间是: " + test);
 //        String type = getFileType("/Users/wangzian/Movies/IMG_5442.mp4");
 //        System.out.println(type);
 
-        List<HashMap<String, Object>> list = getDirectoryInfo("test/pic", "png");
+        List<HashMap<String, Object>> list = getDirectoryInfo("test", "png");
         System.out.println(list.size());
         for (HashMap<String, Object> element: list) {
             System.out.println(element);
