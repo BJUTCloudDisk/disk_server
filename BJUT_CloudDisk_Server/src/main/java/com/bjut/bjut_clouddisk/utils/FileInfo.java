@@ -82,7 +82,7 @@ public class FileInfo {
 
                 // 把图片路径添加到对应的List中
                 List<String> picList = (List<String>) map.get("picList");
-                picList.add(file.getPath().replace(BjutCloudDiskApplication.class.getResource("/disk/").getFile(), ""));
+                picList.add(file.getPath().replace(BjutCloudDiskApplication.class.getResource("/disk/").getFile(), "http://localhost:8081/disk/"));
             }
         }
     }
