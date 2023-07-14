@@ -5,6 +5,7 @@ import com.bjut.bjut_clouddisk.utils.EncryptionDES;
 import com.bjut.bjut_clouddisk.BjutCloudDiskApplication;
 import com.bjut.bjut_clouddisk.common.MyResponse;
 import com.bjut.bjut_clouddisk.config.DiskConfig;
+import com.bjut.bjut_clouddisk.utils.FileManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -134,7 +136,6 @@ public class FileController {
             EncryptionDES des = new EncryptionDES();
             String shareLink = des.encrypt(filePath);
             System.out.println("分享链接是：" + shareLink);
-
             return MyResponse.success(shareLink).message("创建分享链接成功");
         } else {
             return MyResponse.error("文件不存在").message("文件不存在");
@@ -149,7 +150,6 @@ public class FileController {
      * @return
      * @throws Exception
      */
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
     @GetMapping("/getShare")
     public MyResponse<String> getShare(HttpServletResponse response, @RequestParam("shareLink") String shareLink) throws Exception {
         String diskPath = BjutCloudDiskApplication.class.getResource("/disk/").getFile();
@@ -158,32 +158,36 @@ public class FileController {
         String savePath = diskPath + des.decrypt(shareLink);
         File file = new File(savePath);
         if (!file.exists()) {
-            return MyResponse.error("文件不存在");
+            return MyResponse.error("文件不存在").message("");
         }
+//        String fileName = savePath.split("/")[savePath.split("/").length - 1];
+//        String url = save;
+        System.out.println("要获取的文件是：" + savePath);
+        return MyResponse.success("创建成功").message(save);
+    }
 
-        String fileName = savePath.split("/")[savePath.split("/").length - 1];
-        String url = save;
 
-        response.reset();
+//    public MyResponse<String> getShare(HttpServletResponse response, @RequestParam("shareLink") String shareLink) throws Exception {
+//        String diskPath = BjutCloudDiskApplication.class.getResource("/disk/").getFile();
+//        EncryptionDES des = new EncryptionDES();
+//        String save = des.decrypt(shareLink);
+//        String savePath = diskPath + des.decrypt(shareLink);
+//        File file = new File(savePath);
+//        if (!file.exists()) {
+//            return MyResponse.error("文件不存在");
+//        }
+//
+//        String fileName = savePath.split("/")[savePath.split("/").length - 1];
+//        String url = save;
+//
+//        response.reset();
 //        response.setContentLength((int) file.length());
 //        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-//        response.setHeader("fileName", fileName);
-        response.setHeader("url", url);
-//        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
-//            byte[] buff = new byte[1024];
-//            OutputStream os = response.getOutputStream();
-//            int i = 0;
-//            while ((i = bis.read(buff)) != -1) {
-//                os.write(buff, 0, i);
-//                os.flush();
-//            }
-//        } catch (IOException e) {
-//            return MyResponse.error("获取分享文件失败");
-//        }
-        System.out.println("要获取的文件是：" + savePath);
-        return MyResponse.success(url).message("获取分享文件成功");
-        // return MyResponse.success(fileName).message("获取分享文件成功");
-    }
+//        response.setContentType("application/octet-stream");
+//        response.setCharacterEncoding("utf-8");
+//        System.out.println("要获取的文件是：" + savePath);
+//        return MyResponse.success(url).message("获取分享文件成功");
+//    }
 
 
     /***
