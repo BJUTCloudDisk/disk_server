@@ -1,4 +1,5 @@
 package com.bjut.bjut_clouddisk.utils;
+import com.bjut.bjut_clouddisk.BjutCloudDiskApplication;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.ResourceUtils;
@@ -12,7 +13,8 @@ public class TypeSuffixMapJsonReader {
     static {
         try {
             // 读取json文件
-            FileReader reader = new FileReader("src/main/resources/typeSuffixMap.json");
+            String diskPath = BjutCloudDiskApplication.class.getResource("").getFile();
+            FileReader reader = new FileReader(diskPath+"/typeSuffixMap.json");
 
             // 将文件内容转换为字符串
             StringBuilder builder = new StringBuilder();

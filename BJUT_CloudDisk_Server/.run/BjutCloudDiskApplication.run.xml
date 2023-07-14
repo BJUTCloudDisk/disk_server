@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="BjutCloudDiskApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.bjut.bjut_clouddisk.BjutCloudDiskApplication" />
-    <option name="ALTERNATIVE_JRE_PATH" />
+    <module name="BJUT_CloudDisk" />
     <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.bjut.bjut_clouddisk.BjutCloudDiskApplication" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

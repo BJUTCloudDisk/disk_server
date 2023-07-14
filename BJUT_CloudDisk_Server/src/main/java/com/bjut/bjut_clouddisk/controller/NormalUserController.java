@@ -38,6 +38,7 @@ public class NormalUserController {
     @PostMapping("/Login")
     public MyResponse<String> NormalUserLogin(NormalUserEntity normalUserEntity) {
         // 先判断是否登录成功
+        System.out.println(normalUserEntity.getUsername());
         NormalUserService.LoginCode loginCode = normalUserService.NormalUserLogin(normalUserEntity);
 
         switch (loginCode){

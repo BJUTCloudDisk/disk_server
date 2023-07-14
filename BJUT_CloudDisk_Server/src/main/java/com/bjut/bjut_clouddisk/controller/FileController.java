@@ -149,33 +149,42 @@ public class FileController {
      * @return
      * @throws Exception
      */
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
     @GetMapping("/getShare")
     public MyResponse<String> getShare(HttpServletResponse response, @RequestParam("shareLink") String shareLink) throws Exception {
         String diskPath = BjutCloudDiskApplication.class.getResource("/disk/").getFile();
         EncryptionDES des = new EncryptionDES();
+        String save = des.decrypt(shareLink);
         String savePath = diskPath + des.decrypt(shareLink);
-        System.out.println("要获取的文件是：" + savePath);
         File file = new File(savePath);
         if (!file.exists()) {
             return MyResponse.error("文件不存在");
         }
-        response.reset();
-        response.setContentLength((int) file.length());
-        response.setHeader("Content-Disposition", "attachment;filename=" + savePath);
-        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
-            byte[] buff = new byte[1024];
-            OutputStream os = response.getOutputStream();
-            int i = 0;
-            while ((i = bis.read(buff)) != -1) {
-                os.write(buff, 0, i);
-                os.flush();
-            }
-        } catch (IOException e) {
-            return MyResponse.error("获取分享文件失败");
-        }
 
-        return MyResponse.success("获取分享文件成功");
+        String fileName = savePath.split("/")[savePath.split("/").length - 1];
+        String url = save;
+
+        response.reset();
+//        response.setContentLength((int) file.length());
+//        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+//        response.setHeader("fileName", fileName);
+        response.setHeader("url", url);
+//        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
+//            byte[] buff = new byte[1024];
+//            OutputStream os = response.getOutputStream();
+//            int i = 0;
+//            while ((i = bis.read(buff)) != -1) {
+//                os.write(buff, 0, i);
+//                os.flush();
+//            }
+//        } catch (IOException e) {
+//            return MyResponse.error("获取分享文件失败");
+//        }
+        System.out.println("要获取的文件是：" + savePath);
+        return MyResponse.success(url).message("获取分享文件成功");
+        // return MyResponse.success(fileName).message("获取分享文件成功");
     }
+
 
     /***
      * 多线程分块下载文件
